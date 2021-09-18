@@ -1,0 +1,12 @@
+{
+  "port": 3001,
+  "access_token": "asdfghjkl",
+  "sql": "data.sqlite",
+  "server_info": {
+    "software": "sbw-server-main",
+    "name": "39Server",
+    "version": "0.0.1",
+    "feature": ["ideapill", "notify", "clip", ""]
+  },
+  "urls": ["#/admin"]
+}
