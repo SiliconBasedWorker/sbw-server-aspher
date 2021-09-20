@@ -1,9 +1,14 @@
 const dev = process.argv.splice(2)[2] == "d";
 console.log("dev or pro", process.argv);
 console.log("run mode:", dev ? "dev" : "pro");
-const { port, access_token, server_info, sql, urls } = require(dev
-  ? "./config/config.dev.json"
-  : "./config/config.json");
+const {
+  port,
+  server_info,
+  sql,
+  urls,
+  mainServerToken,
+  mainServerPass,
+} = require(dev ? "./config/config.dev.json" : "./config/config.json");
 
 const fs = require("fs");
 var path = require("path");
@@ -22,17 +27,16 @@ app.use(require("cors")());
 app.use(require("compression")());
 
 const httpServer = require("http").createServer(app);
+
 const SocketIOServer = require("socket.io");
 const { instrument } = require("@socket.io/admin-ui");
 
 const io = SocketIOServer(httpServer, {
   cors: {
-    origin: "*",
-    allowedHeaders: "*",
+    origin: ["https://admin.socket.io"],
     credentials: false,
   },
 });
-const { type } = require("os");
 instrument(io, {
   auth: false,
 });
@@ -64,26 +68,14 @@ app.get("/device", (req, res) => {
 });
 
 const clientList = {};
-const socketIdBlackList = [];
 io.on("connection", (socket) => {
-  console.log("connected", socket.id);
+  console.log(new Date(), "client connected: ", `${io.engine.clientsCount}`);
   clientList[socket.id] = {};
-  socketIdBlackList.push(socket.id);
-  let authed = false;
-  // add unauthed client id to a black list, after auth, remove it
-  // use blank list to prevent emit wrong
-  // setInterval(() => {
+  socket.join("unauthed");
 
-  // },3000)
-  socket.on("emit", (body) => {
-    let event = body.event;
-    let data = body.data;
-    let namespace = body.namespace || "/";
-    let room = body.room || null;
-    io.of(namespace).emit(event, data);
-  });
   socket.on("disconnect", () => {
-    console.log("disconnect", socket.id);
+    console.log(new Date(), "client disconnect: ", `${io.engine.clientsCount}`);
+
     clientList[socket.id].isConnected = false;
   });
   socket.on("register", (data) => {
@@ -92,16 +84,39 @@ io.on("connection", (socket) => {
     let authPass = data.authPass || null;
     let deviceType = data.deviceType || "unknown type";
     let character = data.character || null;
+    let onEvents = data.onEvents || ["clip", "notify"];
+    let system = data.system || "unkonwn system";
     clientList[socket.id] = {
       name: deviceName,
       token: token,
       authPass: authPass,
-      deviceType: deviceType,
-      character: character,
+      deviceType: deviceType, // Mobile PC Server Ext
+      character: character, // server stander sitter worker
       registerTime: Date.now(),
       transport: socket.handshake.query.transport,
       isConnected: socket.connected,
+      onEvents: onEvents,
+      system: system,
     };
+    if (token != null && authPass != null) {
+      // check if main-server
+      if (
+        character == "main-server" &&
+        token == mainServerToken &&
+        authPass == mainServerPass
+      ) {
+        // this is main server
+        socket.on("data", (data) => {});
+      }
+      socket.leave("unauthed");
+      // socket.join(character);
+      socket.on("emit", (body) => {
+        let event = body.event;
+        let data = body.data;
+        let namespace = body.namespace || "/";
+        io.of(namespace).except("unauthed").emit(event, data);
+      });
+    }
   });
 });
 
