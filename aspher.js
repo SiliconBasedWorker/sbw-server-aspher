@@ -1,14 +1,12 @@
-const dev = process.argv.splice(2)[2] == "d";
-console.log("dev or pro", process.argv);
-console.log("run mode:", dev ? "dev" : "pro");
 const {
+  hosts,
   port,
   server_info,
   sql,
   urls,
   mainServerToken,
   mainServerPass,
-} = require(dev ? "./config/config.dev.json" : "./config/config.json");
+} = require("./config.json");
 
 const fs = require("fs");
 var path = require("path");
@@ -116,13 +114,22 @@ io.on("connection", (socket) => {
         let namespace = body.namespace || "/";
         io.of(namespace).except("unauthed").emit(event, data);
       });
+      socket.on("logger", (body) => {
+        // console.log(body);
+        // let logSource = body.logSource;
+        // let msg = body.msg;
+        // let namespace = body.namespace || "/";
+        // io.of(namespace).except("unauthed").emit("logger")
+      });
     }
   });
 });
 
-httpServer.listen(port, () => {
-  urls.forEach((url) => {
-    let baseUrl = `http://127.0.0.1:${port}`;
-    console.log(url.replace("#", baseUrl));
+httpServer.listen(port, (err) => {
+  if (err) {
+    console.log(err);
+  }
+  hosts.forEach((host) => {
+    console.log(`http://${host}:${port}`);
   });
 });
