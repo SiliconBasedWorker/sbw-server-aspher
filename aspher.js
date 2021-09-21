@@ -1,9 +1,6 @@
 const {
   hosts,
   port,
-  server_info,
-  sql,
-  urls,
   mainServerToken,
   mainServerPass,
 } = require("./config.json");
@@ -14,11 +11,7 @@ var path = require("path");
 const express = require("express");
 const app = express();
 
-// logger
-// app.use(require("morgan")("dev"));
 app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
-// app.use(require("cookie-parser")());
 app.use("/", express.static(path.join(__dirname, "./public")));
 
 app.use(require("cors")());
@@ -31,7 +24,7 @@ const { instrument } = require("@socket.io/admin-ui");
 
 const io = SocketIOServer(httpServer, {
   cors: {
-    origin: ["https://admin.socket.io"],
+    origin: "*",
     credentials: false,
   },
 });
@@ -45,17 +38,6 @@ app.get("/admin", (req, res) => {
     res.end();
   });
 });
-
-// app.post("/emit", (req, res) => {
-//   let body = req.body;
-//   let event = body.event;
-//   let data = body.data;
-//   let namespace = body.namespace || "/";
-//   let room = body.room || null;
-//   io.of(namespace).emit(event, data);
-//   res.writeHead(200, "OK", { "Content-Type": "application/json" });
-//   res.end();
-// });
 
 app.get("/device", (req, res) => {
   res.writeHead(200, "OK", {
