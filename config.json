@@ -1,6 +1,6 @@
 {
   "hosts": ["172.28.127.62", "127.0.0.1"],
-  "port": 3001,
+  "port": 5001,
   "access_token": "asdfghjkl",
   "mainServerToken": "asdfghjkl",
   "mainServerPass": "qazwsx"

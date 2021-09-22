@@ -91,6 +91,7 @@ io.on("connection", (socket) => {
       socket.leave("unauthed");
       // socket.join(character);
       socket.on("emit", (body) => {
+        console.log("emit", body);
         let event = body.event;
         let data = body.data;
         let namespace = body.namespace || "/";
