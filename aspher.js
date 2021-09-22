@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
       onEvents: onEvents,
       system: system,
     };
-    socket.of("/").to("main-server").emit(clientList);
+    io.of("/").to("main-server").emit(clientList);
     if (token != null && authPass != null) {
       // check if main-server
       if (
