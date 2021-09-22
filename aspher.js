@@ -39,13 +39,13 @@ app.get("/admin", (req, res) => {
   });
 });
 
-app.get("/device", (req, res) => {
-  res.writeHead(200, "OK", {
-    "Content-Type": "application/json",
-  });
-  res.write(JSON.stringify(clientList));
-  res.end();
-});
+// app.get("/device", (req, res) => {
+//   res.writeHead(200, "OK", {
+//     "Content-Type": "application/json",
+//   });
+//   res.write(JSON.stringify(clientList));
+//   res.end();
+// });
 
 const clientList = {};
 io.on("connection", (socket) => {
@@ -78,6 +78,7 @@ io.on("connection", (socket) => {
       onEvents: onEvents,
       system: system,
     };
+    socket.of("/").to("main-server").emit(clientList);
     if (token != null && authPass != null) {
       // check if main-server
       if (
@@ -89,7 +90,7 @@ io.on("connection", (socket) => {
         socket.on("data", (data) => {});
       }
       socket.leave("unauthed");
-      // socket.join(character);
+      socket.join(character);
       socket.on("emit", (body) => {
         console.log("emit", body);
         let event = body.event;
