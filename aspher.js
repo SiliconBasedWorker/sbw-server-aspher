@@ -78,7 +78,6 @@ io.on("connection", (socket) => {
       onEvents: onEvents,
       system: system,
     };
-    io.of("/").to("main-server").emit(clientList);
     if (token != null && authPass != null) {
       // check if main-server
       if (
@@ -105,6 +104,7 @@ io.on("connection", (socket) => {
         // let namespace = body.namespace || "/";
         // io.of(namespace).except("unauthed").emit("logger")
       });
+      io.of("/").to("main-server").emit(clientList);
     }
   });
 });
