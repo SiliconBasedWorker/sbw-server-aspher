@@ -100,6 +100,7 @@ io.on("connection", (socket) => {
         "deviceName":deviceName,
         "authed":true
       })
+      console.log("authed:",deviceName);
       socket.on("emit", (body) => {
         let event = body.event;
         let data = body.data;
