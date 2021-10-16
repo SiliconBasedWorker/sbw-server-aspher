@@ -3,6 +3,7 @@ const {
   port,
   mainServerToken,
   mainServerPass,
+  access_token
 } = require("./config.json");
 
 const fs = require("fs");
@@ -39,13 +40,18 @@ app.get("/admin", (req, res) => {
   });
 });
 
-// app.get("/device", (req, res) => {
-//   res.writeHead(200, "OK", {
-//     "Content-Type": "application/json",
-//   });
-//   res.write(JSON.stringify(clientList));
-//   res.end();
-// });
+app.get("/device", (req, res) => {
+  if(req.headers.access_token != access_token){
+    res.writeHead(403,"UnAuthed",{})
+    res.end("403 Not Authed")
+    return;
+  }
+  res.writeHead(200, "OK", {
+    "Content-Type": "application/json",
+  });
+  res.write(JSON.stringify(clientList));
+  res.end();
+});
 
 const clientList = {};
 io.on("connection", (socket) => {
@@ -90,6 +96,10 @@ io.on("connection", (socket) => {
       }
       socket.leave("unauthed");
       socket.join(character);
+      socket.emit("authed",{
+        "deviceName":deviceName,
+        "authed":true
+      })
       socket.on("emit", (body) => {
         let event = body.event;
         let data = body.data;
