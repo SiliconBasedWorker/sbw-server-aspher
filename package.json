@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "dev": "nodemon ./aspher.js",
-    "start": "nohup node ./aspher.js > /dev/null 2>&1 &"
+    "start": "nohup node ./aspher.js > /dev/null 2>&1 &",
+    "stop":"pkill -f aspher.js"
   },
   "dependencies": {
     "@socket.io/admin-ui": "^0.2.0",
