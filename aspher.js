@@ -55,8 +55,8 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(new Date(), "client disconnect: ", `${io.engine.clientsCount}`);
-
-    clientList[socket.id].isConnected = false;
+    delete clientList[socket.id];
+    // clientList[socket.id].isConnected = false;
   });
   socket.on("register", (data) => {
     let deviceName = data.deviceName || "unknown device";
