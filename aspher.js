@@ -49,7 +49,17 @@ app.get("/device", (req, res) => {
   res.writeHead(200, "OK", {
     "Content-Type": "application/json",
   });
-  res.write(JSON.stringify(clientList));
+  if (req.query.online == "1") {
+    let tmp = [];
+    for (var i in clientList) {
+      if (clientList[i].isConnected) {
+        tmp.push(clientList[i]);
+      }
+    }
+    res.write(JSON.stringify(tmp));
+  } else {
+    res.write(JSON.stringify(clientList));
+  }
   res.end();
 });
 
@@ -61,8 +71,8 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(new Date(), "client disconnect: ", `${io.engine.clientsCount}`);
-    delete clientList[socket.id];
-    // clientList[socket.id].isConnected = false;
+    // delete clientList[socket.id];
+    clientList[socket.id].isConnected = false;
   });
   socket.on("register", (data) => {
     let deviceName = data.deviceName || "unknown device";
