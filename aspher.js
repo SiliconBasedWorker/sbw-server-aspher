@@ -50,10 +50,10 @@ app.get("/device", (req, res) => {
     "Content-Type": "application/json",
   });
   if (req.query.online == "1") {
-    let tmp = [];
+    let tmp = {};
     for (var i in clientList) {
       if (clientList[i].isConnected) {
-        tmp.push(clientList[i]);
+        tmp[i] = clientList[i];
       }
     }
     res.write(JSON.stringify(tmp));
