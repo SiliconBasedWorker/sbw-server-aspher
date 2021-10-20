@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon ./aspher.js",
     "start": "nohup node ./aspher.js > /dev/null 2>&1 &",
-    "stop":"pkill -f aspher.js"
+    "stop": "pkill -f aspher.js",
+    "build-docker": "node build-docker.js"
   },
   "dependencies": {
     "@socket.io/admin-ui": "^0.2.0",
