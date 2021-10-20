@@ -1,4 +1,4 @@
-FROM node
+FROM mhart/alpine-node:16.4.2
 
 COPY --chown=root:root ./*.js ./*.json ./public ./cert /app/
 
