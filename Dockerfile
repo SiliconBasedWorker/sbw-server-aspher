@@ -4,6 +4,11 @@ COPY --chown=root:root ./*.js ./*.json ./public ./cert /app/
 
 WORKDIR /app
 
+ENV port=5001
+ENV access_token=asdfghjkl
+ENV mainServerToken=asdfghjkl
+ENV mainServerPass=qazwsx
+
 # run in build
 RUN npm install
 

@@ -1,10 +1,4 @@
-const {
-  hosts,
-  port,
-  mainServerToken,
-  mainServerPass,
-  access_token,
-} = require("./config.json");
+const config = require("./config");
 
 const fs = require("fs");
 var path = require("path");
@@ -41,7 +35,7 @@ app.get("/admin", (req, res) => {
 });
 
 app.get("/device", (req, res) => {
-  if (req.headers.access_token != access_token) {
+  if (req.headers.access_token != config.access_token) {
     res.writeHead(403, "UnAuthed", {});
     res.end("403 Not Authed");
     return;
@@ -71,7 +65,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(new Date(), "client disconnect: ", `${io.engine.clientsCount}`);
-    // delete clientList[socket.id];
+    delete clientList[socket.id];
     clientList[socket.id].isConnected = false;
   });
   socket.on("register", (data) => {
@@ -98,8 +92,8 @@ io.on("connection", (socket) => {
       // check if main-server
       if (
         character == "main-server" &&
-        token == mainServerToken &&
-        authPass == mainServerPass
+        token == config.mainServerToken &&
+        authPass == config.mainServerPass
       ) {
         // this is main server
         socket.on("data", (data) => {});
@@ -129,11 +123,11 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(port, (err) => {
+httpServer.listen(config.port, (err) => {
   if (err) {
     console.log(err);
   }
-  hosts.forEach((host) => {
-    console.log(`http://${host}:${port}`);
+  config.hosts.forEach((host) => {
+    console.log(`http://${host}:${config.port}`);
   });
 });
