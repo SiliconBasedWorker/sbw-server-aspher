@@ -43,17 +43,24 @@ app.get("/device", (req, res) => {
   res.writeHead(200, "OK", {
     "Content-Type": "application/json",
   });
-  if (req.query.online == "1") {
-    let tmp = {};
-    for (var i in clientList) {
-      if (clientList[i].isConnected) {
-        tmp[i] = clientList[i];
-      }
-    }
-    res.write(JSON.stringify(tmp));
-  } else {
-    res.write(JSON.stringify(clientList));
+  res.write(JSON.stringify(clientList));
+  res.end();
+});
+
+app.get("/device/list", (req, res) => {
+  if (req.headers.access_token != config.access_token) {
+    res.writeHead(403, "UnAuthed", {});
+    res.end("403 Not Authed");
+    return;
   }
+  res.writeHead(200, "OK", {
+    "Content-Type": "application/json",
+  });
+  let tmp = [];
+  for (let i in clientList) {
+    tmp.push(clientList[i]);
+  }
+  res.write(JSON.stringify(tmp));
   res.end();
 });
 
@@ -66,7 +73,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(new Date(), "client disconnect: ", `${io.engine.clientsCount}`);
     delete clientList[socket.id];
-    clientList[socket.id].isConnected = false;
   });
   socket.on("register", (data) => {
     let deviceName = data.deviceName || "unknown device";
